@@ -84,29 +84,35 @@ p  { color: var(--gray-700); }
 .hidden { display: none !important; }
 
 /* ---- Innovation Republic Branding ---- */
-.ir-powered {
-  font-size: 0.62rem;
-  color: var(--gray-500);
-  letter-spacing: 0.25px;
-  white-space: nowrap;
-  margin-top: 1px;
-  line-height: 1;
-}
-.ir-powered a {
-  color: var(--secondary);
-  font-weight: 700;
-  text-decoration: none;
-  opacity: 0.85;
-  transition: opacity var(--transition);
-}
-.ir-powered a:hover { opacity: 1; color: var(--secondary); }
 .navbar-logo-wrap {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2px;
+  gap: 3px;
   text-decoration: none;
 }
+.ir-logo-link {
+  display: block;
+  line-height: 1;
+  opacity: 0.75;
+  transition: opacity var(--transition);
+  text-decoration: none;
+}
+.ir-logo-link:hover { opacity: 1; }
+.ir-logo {
+  height: 14px;
+  width: auto;
+  display: block;
+}
+/* Fallback text if logo file not yet placed */
+.ir-powered-fallback {
+  display: none;
+  font-size: 0.6rem;
+  color: var(--gray-500);
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+.ir-powered-fallback strong { color: var(--secondary); font-weight: 700; }
 
 /* ---- Navbar ---- */
 .navbar {

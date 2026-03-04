@@ -1,0 +1,18 @@
+<!-- PLATZHALTER: Ersetze diese Datei mit dem echten Innovation Republic Logo.
+     Empfohlenes Format: SVG oder PNG, Höhe ca. 18–22px im Navbar-Kontext.
+     Datei umbenennen in: ir-logo.svg (oder ir-logo.png) und den src-Pfad
+     in allen HTML-Dateien im <span class="ir-powered"> anpassen. -->
+<svg width="140" height="20" viewBox="0 0 140 20" xmlns="http://www.w3.org/2000/svg" aria-label="Innovation Republic">
+  <defs>
+    <linearGradient id="irGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#0EA5E9"/>
+    </linearGradient>
+  </defs>
+  <!-- Kleiner Pfeil / Icon links -->
+  <polygon points="0,10 7,4 7,8 14,8 14,12 7,12 7,16" fill="url(#irGrad)" opacity="0.9"/>
+  <!-- Wortmarke -->
+  <text x="18" y="14" font-family="'Segoe UI', Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#1E293B" letter-spacing="0.2">
+    INNOVATION <tspan fill="url(#irGrad)">REPUBLIC</tspan>
+  </text>
+</svg>
