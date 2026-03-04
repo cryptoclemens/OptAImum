@@ -100,6 +100,12 @@
           <div id="hetznerSteps"></div>
         </div>
       </div>
+      <div id="doPanel" class="tab-panel">
+        <div class="card mb-3">
+          <h3 style="margin-bottom:1rem">🌊 <span id="doTitle">DigitalOcean</span></h3>
+          <div id="doSteps"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Script -->
@@ -183,9 +189,11 @@
     document.getElementById('setupTabBtns').innerHTML = `
       <button class="tab-btn active" data-tab="oraclePanel">${s.oracle}</button>
       <button class="tab-btn" data-tab="hetznerPanel">${s.hetzner}</button>
+      <button class="tab-btn" data-tab="doPanel">${s.digitalocean}</button>
     `;
     document.getElementById('oraclePanel').classList.add('active');
     document.getElementById('hetznerPanel').classList.remove('active');
+    document.getElementById('doPanel').classList.remove('active');
 
     // Oracle steps
     document.getElementById('oracleSteps').innerHTML = s.steps.oracle.map((step, i) => `
@@ -197,6 +205,14 @@
 
     // Hetzner steps
     document.getElementById('hetznerSteps').innerHTML = s.steps.hetzner.map((step, i) => `
+      <div class="setup-step">
+        <div class="setup-num">${i+1}</div>
+        <div class="text-sm">${step}</div>
+      </div>
+    `).join('');
+
+    // DigitalOcean steps
+    document.getElementById('doSteps').innerHTML = s.steps.digitalocean.map((step, i) => `
       <div class="setup-step">
         <div class="setup-num">${i+1}</div>
         <div class="text-sm">${step}</div>

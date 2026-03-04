@@ -114,6 +114,13 @@
           <pre class="prompt-output" id="promptOutput"></pre>
         </div>
 
+        <!-- Templates -->
+        <div class="card mb-3">
+          <h3 id="templatesTitle" style="margin-bottom:0.25rem">⚡ Schnellstart-Templates</h3>
+          <p id="templatesSubtitle" class="text-sm text-muted mt-0 mb-3"></p>
+          <div id="templatesGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:0.5rem"></div>
+        </div>
+
         <div class="card">
           <h3 id="tipsTitle" style="margin-bottom:1rem">💡 Prompt-Tipps für Anfänger</h3>
           <div id="tipsContainer" style="display:flex; flex-direction:column; gap:0.75rem"></div>
@@ -191,6 +198,35 @@
     }
     renderAgentGrid();
     renderTips();
+    renderTemplates();
+  }
+
+  function renderTemplates() {
+    const tmpl = t[currentLang].prompt.templates;
+    document.getElementById('templatesTitle').textContent  = '⚡ ' + tmpl.title;
+    document.getElementById('templatesSubtitle').textContent = tmpl.subtitle;
+    document.getElementById('templatesGrid').innerHTML = tmpl.items.map(item => `
+      <button onclick="applyTemplate(this)" data-task="${item.task.replace(/"/g,'&quot;')}"
+        style="background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);
+               padding:0.55rem 0.75rem;font-size:0.78rem;font-weight:600;cursor:pointer;
+               color:var(--gray-700);transition:all var(--transition);text-align:left;display:flex;align-items:center;gap:0.4rem;">
+        ${item.icon} ${item.label}
+      </button>
+    `).join('');
+  }
+
+  function applyTemplate(btn) {
+    document.getElementById('taskInput').value = btn.dataset.task;
+    document.getElementById('taskInput').focus();
+    // Highlight briefly
+    btn.style.borderColor = 'var(--primary)';
+    btn.style.color = 'var(--primary)';
+    btn.style.background = 'rgba(14,165,233,0.07)';
+    setTimeout(() => {
+      btn.style.borderColor = '';
+      btn.style.color = '';
+      btn.style.background = '';
+    }, 1200);
   }
 
   async function doGeneratePrompt() {

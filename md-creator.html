@@ -108,8 +108,22 @@
             <button class="btn btn-ghost btn-sm" onclick="downloadMd(currentMd, currentMdType + '.md')">⬇ .md</button>
           </div>
         </div>
-        <div style="position:relative">
-          <pre class="code-block" id="mdOutput"></pre>
+        <!-- Preview Toggle -->
+        <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem; flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;font-weight:600;cursor:pointer;color:var(--gray-600)">
+            <input type="checkbox" id="previewToggle" onchange="togglePreview()" style="cursor:pointer"/>
+            <span id="previewToggleLabel">Vorschau anzeigen</span>
+          </label>
+        </div>
+
+        <!-- Split view: code + rendered preview -->
+        <div id="splitView" style="display:grid; grid-template-columns:1fr; gap:1rem">
+          <div>
+            <pre class="code-block" id="mdOutput" style="margin:0"></pre>
+          </div>
+          <div id="previewPanel" style="display:none; border:1.5px solid var(--gray-200); border-radius:var(--radius); padding:1.25rem 1.5rem; background:var(--white); min-height:200px; overflow-y:auto; max-height:500px">
+            <div id="mdPreview" style="font-size:0.875rem; line-height:1.75; color:var(--gray-800); white-space:pre-wrap; font-family:inherit"></div>
+          </div>
         </div>
       </div>
 
@@ -340,6 +354,7 @@
       t[currentLang].md.result.title.replace('{type}', typeLabel);
 
     document.getElementById('mdOutput').textContent = currentMd;
+    updatePreview();
 
     // Placement cards
     const placements = t[currentLang].md.placement[selectedType] || [];
@@ -386,6 +401,39 @@
       renderQuestion();
     }
   });
+
+  // MD Vorschau (Feature #7)
+  function updatePreview() {
+    const preview = document.getElementById('mdPreview');
+    if (!preview) return;
+    // Simple Markdown → HTML renderer for preview
+    let html = currentMd
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/^# (.+)$/gm,  '<h1 style="font-size:1.2rem;font-weight:700;margin:0.75rem 0 0.4rem;color:var(--dark)">$1</h1>')
+      .replace(/^## (.+)$/gm, '<h2 style="font-size:1rem;font-weight:700;margin:0.6rem 0 0.3rem;color:var(--gray-800)">$1</h2>')
+      .replace(/^### (.+)$/gm,'<h3 style="font-size:0.9rem;font-weight:600;margin:0.5rem 0 0.25rem;color:var(--gray-700)">$1</h3>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,   '<em>$1</em>')
+      .replace(/`([^`]+)`/g,   '<code style="background:var(--gray-100);padding:0.1rem 0.35rem;border-radius:4px;font-size:0.8rem">$1</code>')
+      .replace(/^[-*] (.+)$/gm,'<li style="margin-left:1.2rem;list-style:disc">$1</li>')
+      .replace(/^> (.+)$/gm,   '<blockquote style="border-left:3px solid var(--primary);padding-left:0.75rem;color:var(--gray-500);margin:0.5rem 0">$1</blockquote>')
+      .replace(/---/g, '<hr style="border:none;border-top:1px solid var(--gray-200);margin:0.75rem 0"/>')
+      .replace(/\n{2,}/g, '<br/><br/>').replace(/\n/g, '<br/>');
+    preview.innerHTML = html;
+  }
+
+  function togglePreview() {
+    const on      = document.getElementById('previewToggle').checked;
+    const panel   = document.getElementById('previewPanel');
+    const split   = document.getElementById('splitView');
+    const lbl     = document.getElementById('previewToggleLabel');
+    panel.style.display = on ? 'block' : 'none';
+    split.style.gridTemplateColumns = on ? '1fr 1fr' : '1fr';
+    lbl.textContent = currentLang === 'de'
+      ? (on ? 'Vorschau verbergen' : 'Vorschau anzeigen')
+      : (on ? 'Hide preview' : 'Show preview');
+    if (on) updatePreview();
+  }
 
   document.addEventListener('DOMContentLoaded', () => {
     renderTypeCards();
