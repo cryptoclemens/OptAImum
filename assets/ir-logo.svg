@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 272 68">
+  <!-- Black chevron (back) -->
+  <path fill="#2D2D2D" fill-rule="evenodd"
+    d="M 0,0 L 38,0 L 60,34 L 38,68 L 0,68 Z
+       M 0,19 L 30,34 L 0,49 Z"/>
+  <!-- Red chevron (middle) -->
+  <path fill="#CC0011" fill-rule="evenodd"
+    d="M 19,0 L 57,0 L 79,34 L 57,68 L 19,68 Z
+       M 19,19 L 49,34 L 19,49 Z"/>
+  <!-- Gold chevron (front) -->
+  <path fill="#F5A800" fill-rule="evenodd"
+    d="M 38,0 L 76,0 L 98,34 L 76,68 L 38,68 Z
+       M 38,19 L 68,34 L 38,49 Z"/>
+  <!-- INNOVATION -->
+  <text x="112" y="27"
+    font-family="'Arial Black','Arial','Helvetica',sans-serif"
+    font-size="20" font-weight="900" fill="#333333" letter-spacing="0.6">INNOVATION</text>
+  <!-- REPUBLIC -->
+  <text x="112" y="54"
+    font-family="'Arial Black','Arial','Helvetica',sans-serif"
+    font-size="20" font-weight="900" fill="#333333" letter-spacing="0.6">REPUBLIC</text>
+</svg>

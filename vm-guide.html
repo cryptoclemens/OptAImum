@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>OptAImum – VM-Anleitung</title>
   <link rel="stylesheet" href="css/style.css"/>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+  <link rel="icon" type="image/png" href="assets/favicon.png"/>
   <style>
     .compat-legend { display: flex; gap: 1.25rem; flex-wrap: wrap; margin-bottom: 1rem; font-size: 0.82rem; }
     .compat-legend span { display: flex; align-items: center; gap: 0.35rem; }
@@ -45,7 +47,7 @@
       <a href="md-creator.html" data-lang-key="nav.mdCreator">MD-Creator</a>
       <a href="llm-switcher.html" data-lang-key="nav.llmSwitch">LLM-Wechsel</a>
       <a href="prompt-generator.html" data-lang-key="nav.promptGen">Prompts</a>
-      <a href="vm-guide.html" class="active" data-lang-key="nav.vmGuide">VM-Anleitung</a>
+      <a href="vm-guide.html" class="active" data-lang-key="nav.vmGuide">OpenClaw VM-Guide</a>
     </div>
     <div class="lang-toggle">
       <button class="lang-btn" data-lang="de">DE</button>
@@ -160,7 +162,7 @@
 
     document.getElementById('providerRows').innerHTML = vm.providers.map(p => `
       <tr class="${p.best ? 'highlight-row' : ''} tier-${p.tier}">
-        <td><strong>${p.name}</strong></td>
+        <td><strong><a href="${p.url}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">${p.name}</a></strong></td>
         <td>${p.plan}</td>
         <td>${p.cpu}</td>
         <td>${p.ram}</td>
