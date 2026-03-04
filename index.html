@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="de" data-lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="OptAImum – Optimiere deine KI-Nutzung. MD-Creator, LLM-Wechsel, Prompt-Generator und VM-Anleitung für Claude, ChatGPT & Co."/>
+  <title>OptAImum – KI-Nutzung optimieren</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .version-badge {
+      position: fixed; top: 0.6rem; right: 5rem; z-index: 200;
+      background: rgba(99,102,241,0.12); color: var(--secondary);
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 12px; padding: 0.15rem 0.6rem;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;
+      pointer-events: none;
+    }
+    .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }
+    .why-card { display: flex; gap: 1rem; align-items: flex-start; padding: 1.25rem; background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius); }
+    .why-icon { font-size: 1.75rem; flex-shrink: 0; }
+    .hero-visual { display: flex; justify-content: center; margin-top: 3rem; gap: 0.75rem; flex-wrap: wrap; }
+    .hero-chip {
+      background: var(--white); border: 1px solid var(--gray-200);
+      border-radius: 20px; padding: 0.4rem 1rem;
+      font-size: 0.82rem; color: var(--gray-700);
+      display: flex; align-items: center; gap: 0.4rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .feature-badge {
+      display: inline-block; background: rgba(14,165,233,0.1);
+      color: var(--primary); font-size: 0.7rem; font-weight: 700;
+      border-radius: 10px; padding: 0.1rem 0.5rem; margin-bottom: 0.5rem;
+    }
+    .cta-section {
+      background: var(--gradient); border-radius: var(--radius-lg);
+      padding: 3rem 2rem; text-align: center; color: var(--white); margin-top: 1rem;
+    }
+    .cta-section h2 { color: var(--white); }
+    .cta-section p { color: rgba(255,255,255,0.85); max-width: 500px; margin: 0.75rem auto 1.5rem; }
+    .btn-white { background: var(--white); color: var(--primary); border-color: var(--white); }
+    .btn-white:hover { background: rgba(255,255,255,0.9); color: var(--primary); transform: translateY(-1px); }
+  </style>
+</head>
+<body>
+
+<span class="version-badge">v0.1.0</span>
+
+<!-- ── NAVBAR ───────────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="container navbar-inner">
+    <a class="navbar-logo" href="index.html">
+      <img src="assets/logo.svg" alt="OptAImum" height="36"/>
+    </a>
+
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="navbar-links" id="navLinks">
+      <a href="index.html" data-lang-key="nav.home">Start</a>
+      <a href="md-creator.html" data-lang-key="nav.mdCreator">MD-Creator</a>
+      <a href="llm-switcher.html" data-lang-key="nav.llmSwitch">LLM-Wechsel</a>
+      <a href="prompt-generator.html" data-lang-key="nav.promptGen">Prompts</a>
+      <a href="vm-guide.html" data-lang-key="nav.vmGuide">VM-Anleitung</a>
+    </div>
+
+    <div class="lang-toggle">
+      <button class="lang-btn" data-lang="de">DE</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge" data-lang-key="hero.badge">✦ KI-Nutzung einfach gemacht</div>
+    <h1 data-lang-key="hero.title">Deine KI-Nutzung.<br><span class="gradient-text">Auf das Maximum optimiert.</span></h1>
+    <p data-lang-key="hero.subtitle">Profile, Skill- &amp; Hook-MDs erstellen, Anbieter in Minuten wechseln, Prompts generieren und KI-Sandboxen aufsetzen – alles an einem Ort.</p>
+    <div class="hero-actions">
+      <a href="md-creator.html" class="btn btn-primary btn-lg" data-lang-key="hero.cta1">Jetzt starten</a>
+      <a href="#why" class="btn btn-secondary btn-lg" data-lang-key="hero.cta2">Was ist OptAImum?</a>
+    </div>
+
+    <div class="hero-visual">
+      <span class="hero-chip">📝 Profil-MD</span>
+      <span class="hero-chip">🛠️ Skill-MD</span>
+      <span class="hero-chip">🪝 Hook-MD</span>
+      <span class="hero-chip">🔄 LLM-Wechsel</span>
+      <span class="hero-chip">🤖 Prompt-Generator</span>
+      <span class="hero-chip">🖥️ VM-Setup</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ──────────────────────────────────────────────── -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-header">
+      <h2 data-lang-key="features.title">Was möchtest du tun?</h2>
+      <p data-lang-key="features.subtitle">Wähle deinen Einstiegspunkt – du kannst jederzeit wechseln.</p>
+    </div>
+
+    <div class="grid-4" id="featureCards">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ── WHY ───────────────────────────────────────────────────── -->
+<section class="section-sm" id="why" style="background: var(--white); border-top: 1px solid var(--gray-200); border-bottom: 1px solid var(--gray-200);">
+  <div class="container">
+    <div class="section-header">
+      <h2 data-lang-key="why.title">Warum OptAImum?</h2>
+      <p data-lang-key="why.subtitle">Stunden sparen, besser prompten, schnell wechseln.</p>
+    </div>
+    <div class="why-grid" id="whyPoints">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ───────────────────────────────────────────────────── -->
+<section class="section">
+  <div class="container">
+    <div class="cta-section">
+      <h2 id="ctaTitle">Bereit, deine KI-Nutzung zu optimieren?</h2>
+      <p id="ctaSubtitle">Starte mit dem MD-Creator – in 5 Minuten hast du dein erstes personalisiertes Profil.</p>
+      <a href="md-creator.html" class="btn btn-white btn-lg" id="ctaBtn">MD-Creator öffnen →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ────────────────────────────────────────────────── -->
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-logo">
+      <img src="assets/logo.svg" alt="OptAImum"/>
+    </div>
+    <div class="footer-links">
+      <a href="md-creator.html" data-lang-key="nav.mdCreator">MD-Creator</a>
+      <a href="llm-switcher.html" data-lang-key="nav.llmSwitch">LLM-Wechsel</a>
+      <a href="prompt-generator.html" data-lang-key="nav.promptGen">Prompts</a>
+      <a href="vm-guide.html" data-lang-key="nav.vmGuide">VM-Anleitung</a>
+      <a href="https://github.com/cryptoclemens/OptAImum" target="_blank">GitHub</a>
+    </div>
+    <span class="text-muted" style="font-size:0.8rem;" data-lang-key="footer.copy">© 2025 OptAImum. Für die KI-Community.</span>
+  </div>
+</footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/app.js"></script>
+<script>
+  // ── Render feature cards ──────────────────────────────────
+  function renderCards() {
+    const cards = t[currentLang].features.cards;
+    const container = document.getElementById('featureCards');
+    container.innerHTML = cards.map(card => `
+      <a href="${card.link}" class="card card-feature">
+        ${card.badge ? `<div class="feature-badge">${card.badge}</div>` : '<div style="height:1.4rem"></div>'}
+        <div class="card-icon">${card.icon}</div>
+        <h3>${card.title}</h3>
+        <p class="mt-1 text-sm">${card.desc}</p>
+      </a>
+    `).join('');
+  }
+
+  function renderWhyPoints() {
+    const points = t[currentLang].why.points;
+    const container = document.getElementById('whyPoints');
+    container.innerHTML = points.map(p => `
+      <div class="why-card">
+        <div class="why-icon">${p.icon}</div>
+        <div>
+          <h3 style="margin-bottom:0.25rem">${p.title}</h3>
+          <p class="text-sm">${p.desc}</p>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderCta() {
+    const lang = currentLang;
+    document.getElementById('ctaTitle').textContent = lang === 'de'
+      ? 'Bereit, deine KI-Nutzung zu optimieren?'
+      : 'Ready to optimize your AI usage?';
+    document.getElementById('ctaSubtitle').textContent = lang === 'de'
+      ? 'Starte mit dem MD-Creator – in 5 Minuten hast du dein erstes personalisiertes Profil.'
+      : 'Start with the MD Creator – in 5 minutes you have your first personalized profile.';
+    document.getElementById('ctaBtn').textContent = lang === 'de'
+      ? 'MD-Creator öffnen →'
+      : 'Open MD Creator →';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderCards();
+    renderWhyPoints();
+    renderCta();
+  });
+
+  document.addEventListener('langChange', () => {
+    renderCards();
+    renderWhyPoints();
+    renderCta();
+  });
+</script>
+</body>
+</html>

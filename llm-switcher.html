@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="de" data-lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OptAImum – LLM-Wechsel</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .arrow-badge {
+      font-size: 1.5rem; display: flex; align-items: center;
+      justify-content: center; color: var(--gray-400); padding: 0 0.5rem;
+    }
+    .step-card {
+      background: var(--white); border: 1px solid var(--gray-200);
+      border-radius: var(--radius); padding: 1.25rem; margin-bottom: 0.75rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .step-num {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      background: var(--gradient); color: white; font-weight: 700;
+      font-size: 0.875rem; display: flex; align-items: center; justify-content: center;
+    }
+    .step-time {
+      margin-left: auto; font-size: 0.78rem; color: var(--gray-500);
+      white-space: nowrap; padding-top: 0.2rem;
+      background: var(--gray-100); padding: 0.2rem 0.6rem; border-radius: 10px;
+    }
+    .platforms-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .comparison-check { color: var(--accent); }
+    .comparison-warn  { color: var(--warn); }
+    .time-total {
+      background: var(--gradient-soft); border: 1px solid rgba(14,165,233,0.2);
+      border-radius: var(--radius); padding: 1rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container navbar-inner">
+    <a class="navbar-logo" href="index.html"><img src="assets/logo.svg" alt="OptAImum" height="36"/></a>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    <div class="navbar-links" id="navLinks">
+      <a href="index.html" data-lang-key="nav.home">Start</a>
+      <a href="md-creator.html" data-lang-key="nav.mdCreator">MD-Creator</a>
+      <a href="llm-switcher.html" class="active" data-lang-key="nav.llmSwitch">LLM-Wechsel</a>
+      <a href="prompt-generator.html" data-lang-key="nav.promptGen">Prompts</a>
+      <a href="vm-guide.html" data-lang-key="nav.vmGuide">VM-Anleitung</a>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn" data-lang="de">DE</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</nav>
+
+<section class="section">
+  <div class="container" style="max-width:860px">
+    <h1 id="llmTitle">LLM-Wechsel in Minuten</h1>
+    <p class="mt-1 mb-4" id="llmIntro">Wechsle deinen KI-Anbieter ohne Datenverlust.</p>
+
+    <!-- Platform selector -->
+    <div class="card mb-3">
+      <h3 id="fromLabel" style="margin-bottom:0.75rem">Von welchem Anbieter wechselst du?</h3>
+      <div class="platform-select" id="fromPlatforms">
+        <div class="platform-chip" data-val="chatgpt" onclick="selectFrom('chatgpt')">🟢 ChatGPT</div>
+        <div class="platform-chip" data-val="claude" onclick="selectFrom('claude')">🟠 Claude</div>
+        <div class="platform-chip" data-val="gemini" onclick="selectFrom('gemini')">🔵 Gemini</div>
+        <div class="platform-chip" data-val="copilot" onclick="selectFrom('copilot')">⚫ Copilot</div>
+      </div>
+
+      <div class="flex-center gap-2" style="margin: 1rem 0;">
+        <div style="flex:1; height:1px; background: var(--gray-200)"></div>
+        <span style="font-size: 1.25rem">→</span>
+        <div style="flex:1; height:1px; background: var(--gray-200)"></div>
+      </div>
+
+      <h3 id="toLabel" style="margin-bottom:0.75rem">Zu welchem Anbieter wechselst du?</h3>
+      <div class="platform-select" id="toPlatforms">
+        <div class="platform-chip" data-val="claude" onclick="selectTo('claude')">🟠 Claude</div>
+        <div class="platform-chip" data-val="chatgpt" onclick="selectTo('chatgpt')">🟢 ChatGPT</div>
+        <div class="platform-chip" data-val="gemini" onclick="selectTo('gemini')">🔵 Gemini</div>
+        <div class="platform-chip" data-val="copilot" onclick="selectTo('copilot')">⚫ Copilot</div>
+      </div>
+
+      <div class="mt-3">
+        <button class="btn btn-primary" onclick="generateGuide()" id="generateBtn">
+          🔄 <span id="generateBtnText">Wechsel-Anleitung generieren</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Guide output -->
+    <div id="guideOutput" class="hidden">
+      <div class="time-total">
+        <span style="font-size:1.5rem">⏱️</span>
+        <div>
+          <strong id="timeTotalLabel">Geschätzter Aufwand:</strong>
+          <span id="timeTotal">~18 Minuten</span>
+        </div>
+        <div class="ml-auto">
+          <span class="badge badge-green" id="difficultyBadge">Einfach</span>
+        </div>
+      </div>
+
+      <div id="stepsContainer"></div>
+
+      <div class="alert alert-info mt-3" id="tipBox">
+        <span class="alert-icon">💡</span>
+        <span id="tipText"></span>
+      </div>
+
+      <div class="mt-3">
+        <a href="md-creator.html" class="btn btn-primary">📝 <span id="mdCreatorLink">MD-Creator öffnen</span></a>
+      </div>
+    </div>
+
+    <!-- Comparison table -->
+    <div class="mt-4">
+      <h2 id="compTitle" style="margin-bottom:1rem">Claude vs. ChatGPT – Quick Reference</h2>
+      <div class="table-wrap">
+        <table id="compTable">
+          <thead><tr id="compHeaders"></tr></thead>
+          <tbody id="compRows"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-logo"><img src="assets/logo.svg" alt="OptAImum"/></div>
+    <div class="footer-links">
+      <a href="https://github.com/cryptoclemens/OptAImum" target="_blank">GitHub</a>
+    </div>
+    <span class="text-muted" style="font-size:0.8rem;" data-lang-key="footer.copy">© 2025 OptAImum.</span>
+  </div>
+</footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/app.js"></script>
+<script>
+  let fromPlatform = null;
+  let toPlatform   = null;
+
+  function selectFrom(val) {
+    fromPlatform = val;
+    document.querySelectorAll('#fromPlatforms .platform-chip').forEach(c => {
+      c.classList.toggle('selected', c.dataset.val === val);
+    });
+  }
+  function selectTo(val) {
+    toPlatform = val;
+    document.querySelectorAll('#toPlatforms .platform-chip').forEach(c => {
+      c.classList.toggle('selected-to', c.dataset.val === val);
+    });
+  }
+
+  function generateGuide() {
+    if (!fromPlatform || !toPlatform) {
+      showToast(currentLang === 'de' ? 'Bitte wähle Start- und Ziel-Plattform.' : 'Please select source and target platform.', 'error');
+      return;
+    }
+    if (fromPlatform === toPlatform) {
+      showToast(currentLang === 'de' ? 'Start und Ziel sind gleich.' : 'Source and target are the same.', 'error');
+      return;
+    }
+
+    const llm = t[currentLang].llm;
+    const key = `${fromPlatform}_${toPlatform}`;
+    const steps = llm.steps[key];
+
+    document.getElementById('guideOutput').classList.remove('hidden');
+
+    if (steps) {
+      const totalTime = steps.reduce((acc, s) => {
+        const m = parseInt((s.time || '0').replace(/\D/g,'')) || 0;
+        return acc + m;
+      }, 0);
+      document.getElementById('timeTotal').textContent = `~${totalTime} ${currentLang === 'de' ? 'Minuten' : 'minutes'}`;
+
+      document.getElementById('stepsContainer').innerHTML = steps.map((s, i) => `
+        <div class="step-card">
+          <div class="step-num">${i+1}</div>
+          <div style="flex:1">
+            <strong>${s.title}</strong>
+            <p class="text-sm mt-1">${s.desc}</p>
+          </div>
+          <span class="step-time">${s.time}</span>
+        </div>
+      `).join('');
+    } else {
+      document.getElementById('stepsContainer').innerHTML = `
+        <div class="alert alert-warn">
+          <span class="alert-icon">⚠️</span>
+          <span>${currentLang === 'de'
+            ? `Direkte Anleitung für ${fromPlatform} → ${toPlatform} wird bald ergänzt. Der allgemeine Prozess: Kontext sichern → Account einrichten → Einstellungen übertragen → Testen.`
+            : `Direct guide for ${fromPlatform} → ${toPlatform} coming soon. General process: Save context → Set up account → Transfer settings → Test.`
+          }</span>
+        </div>`;
+      document.getElementById('timeTotal').textContent = currentLang === 'de' ? '~20 Minuten' : '~20 minutes';
+    }
+
+    document.getElementById('tipText').textContent = llm.tip;
+    document.getElementById('mdCreatorLink').textContent = currentLang === 'de' ? 'MD-Creator öffnen' : 'Open MD Creator';
+  }
+
+  function renderComparison() {
+    const c = t[currentLang].llm.comparison;
+    document.getElementById('compTitle').textContent = c.title;
+    document.getElementById('compHeaders').innerHTML = c.headers.map(h => `<th>${h}</th>`).join('');
+    document.getElementById('compRows').innerHTML = c.rows.map(row => `
+      <tr>${row.map((cell, i) => `<td>${cell}</td>`).join('')}</tr>
+    `).join('');
+  }
+
+  function refreshLabels() {
+    const llm = t[currentLang].llm;
+    document.getElementById('llmTitle').textContent = llm.pageTitle;
+    document.getElementById('llmIntro').textContent = llm.intro;
+    document.getElementById('fromLabel').textContent = llm.from;
+    document.getElementById('toLabel').textContent = llm.to;
+    document.getElementById('generateBtnText').textContent = llm.generate;
+    renderComparison();
+  }
+
+  document.addEventListener('DOMContentLoaded', renderComparison);
+  document.addEventListener('langChange', refreshLabels);
+</script>
+</body>
+</html>

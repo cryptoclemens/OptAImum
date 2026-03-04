@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="de" data-lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OptAImum – VM-Anleitung</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .compat-legend { display: flex; gap: 1.25rem; flex-wrap: wrap; margin-bottom: 1rem; font-size: 0.82rem; }
+    .compat-legend span { display: flex; align-items: center; gap: 0.35rem; }
+    .feature-box {
+      background: var(--white); border: 1px solid var(--gray-200);
+      border-radius: var(--radius); padding: 1rem 1.25rem; flex: 1; min-width: 200px;
+    }
+    .feature-boxes { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .feature-req { font-size: 0.78rem; color: var(--gray-500); margin-top: 0.25rem; }
+    .setup-step {
+      display: flex; gap: 0.75rem; align-items: flex-start;
+      padding: 0.75rem 0; border-bottom: 1px solid var(--gray-200);
+    }
+    .setup-step:last-child { border-bottom: none; }
+    .setup-num {
+      width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+      background: var(--gradient); color: white; font-weight: 700;
+      font-size: 0.78rem; display: flex; align-items: center; justify-content: center;
+    }
+    .highlight-row td { font-weight: 600; }
+    .free-pill {
+      background: rgba(16,185,129,0.15); color: var(--accent);
+      border-radius: 10px; padding: 0.1rem 0.5rem; font-size: 0.75rem; font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container navbar-inner">
+    <a class="navbar-logo" href="index.html"><img src="assets/logo.svg" alt="OptAImum" height="36"/></a>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    <div class="navbar-links" id="navLinks">
+      <a href="index.html" data-lang-key="nav.home">Start</a>
+      <a href="md-creator.html" data-lang-key="nav.mdCreator">MD-Creator</a>
+      <a href="llm-switcher.html" data-lang-key="nav.llmSwitch">LLM-Wechsel</a>
+      <a href="prompt-generator.html" data-lang-key="nav.promptGen">Prompts</a>
+      <a href="vm-guide.html" class="active" data-lang-key="nav.vmGuide">VM-Anleitung</a>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn" data-lang="de">DE</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</nav>
+
+<section class="section">
+  <div class="container" style="max-width:960px">
+    <h1 id="vmTitle">VM &amp; Sandbox Aufsetzen</h1>
+    <p class="mt-1 mb-4" id="vmIntro">Vergleiche Anbieter und setze deine Claude Code / OpenClaw Sandbox auf.</p>
+
+    <!-- Feature compatibility -->
+    <h2 id="featTitle" style="margin-bottom:1rem">OpenClaw Feature-Kompatibilität</h2>
+    <div class="feature-boxes" id="featureBoxes"></div>
+
+    <!-- Provider comparison -->
+    <h2 id="compTitle" style="margin-bottom:0.5rem">Anbietervergleich</h2>
+    <p class="text-sm text-muted mb-2" id="compSubtitle">Für das Ausführen von Claude Code / OpenClaw</p>
+
+    <div class="compat-legend">
+      <span>✅ Vollständig</span>
+      <span>⚠ Eingeschränkt</span>
+      <span>✗ Nicht ausreichend</span>
+    </div>
+
+    <div class="table-wrap mb-4">
+      <table id="providerTable">
+        <thead><tr id="providerHeaders"></tr></thead>
+        <tbody id="providerRows"></tbody>
+      </table>
+    </div>
+
+    <!-- Setup guide with tabs -->
+    <h2 id="setupTitle" style="margin-bottom:1rem">Setup-Anleitung (Ubuntu 22.04)</h2>
+
+    <div id="setupTabs">
+      <div class="tabs" id="setupTabBtns"></div>
+
+      <div id="oraclePanel" class="tab-panel">
+        <div class="card mb-3">
+          <h3 style="margin-bottom:1rem">🆓 <span id="oracleTitle">Oracle Cloud</span></h3>
+          <div id="oracleSteps"></div>
+        </div>
+      </div>
+      <div id="hetznerPanel" class="tab-panel">
+        <div class="card mb-3">
+          <h3 style="margin-bottom:1rem">💶 <span id="hetznerTitle">Hetzner</span></h3>
+          <div id="hetznerSteps"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Script -->
+    <div class="card mt-3">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem">
+        <h3>🔧 Setup-Script</h3>
+        <button class="btn btn-secondary btn-sm" onclick="copyScript()">Kopieren</button>
+      </div>
+      <pre class="code-block" id="setupScript" style="max-height:340px"></pre>
+    </div>
+
+    <div class="alert alert-info mt-3">
+      <span class="alert-icon">💡</span>
+      <span id="vmTipText">
+        Nach dem Setup: Setze deinen Anthropic API-Key mit <code>export ANTHROPIC_API_KEY='dein-key'</code> und starte Claude Code mit <code>claude</code>.
+      </span>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-logo"><img src="assets/logo.svg" alt="OptAImum"/></div>
+    <div class="footer-links">
+      <a href="https://github.com/cryptoclemens/OptAImum" target="_blank">GitHub</a>
+    </div>
+    <span class="text-muted" style="font-size:0.8rem;" data-lang-key="footer.copy">© 2025 OptAImum.</span>
+  </div>
+</footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/app.js"></script>
+<script>
+  function renderFeatureBoxes() {
+    const f = t[currentLang].vm.features;
+    document.getElementById('featureBoxes').innerHTML = `
+      <div class="feature-box">
+        <strong>${f.basic.label}</strong>
+        <p class="text-sm mt-1">${f.basic.desc}</p>
+        <div class="feature-req">Min: ${f.basic.req}</div>
+      </div>
+      <div class="feature-box">
+        <strong>${f.std.label}</strong>
+        <p class="text-sm mt-1">${f.std.desc}</p>
+        <div class="feature-req">Min: ${f.std.req}</div>
+      </div>
+      <div class="feature-box">
+        <strong>${f.adv.label}</strong>
+        <p class="text-sm mt-1">${f.adv.desc}</p>
+        <div class="feature-req">Min: ${f.adv.req}</div>
+      </div>
+    `;
+  }
+
+  function renderProviderTable() {
+    const vm = t[currentLang].vm;
+    const h = vm.comparison.headers;
+    document.getElementById('providerHeaders').innerHTML = h.map(hh => `<th>${hh}</th>`).join('');
+
+    document.getElementById('providerRows').innerHTML = vm.providers.map(p => `
+      <tr class="${p.best ? 'highlight-row' : ''} tier-${p.tier}">
+        <td><strong>${p.name}</strong></td>
+        <td>${p.plan}</td>
+        <td>${p.cpu}</td>
+        <td>${p.ram}</td>
+        <td>${p.tier === 'free' ? `<span class="free-pill">${p.price}</span>` : `<strong>${p.price}</strong>`}</td>
+        <td class="check">${p.basic}</td>
+        <td class="check">${p.std}</td>
+        <td class="check">${p.adv}</td>
+        <td><small>${p.note}</small></td>
+      </tr>
+    `).join('');
+  }
+
+  function renderSetupGuide() {
+    const vm = t[currentLang].vm;
+    const s  = vm.setup;
+
+    // Tab buttons
+    document.getElementById('setupTabBtns').innerHTML = `
+      <button class="tab-btn active" data-tab="oraclePanel">${s.oracle}</button>
+      <button class="tab-btn" data-tab="hetznerPanel">${s.hetzner}</button>
+    `;
+    document.getElementById('oraclePanel').classList.add('active');
+    document.getElementById('hetznerPanel').classList.remove('active');
+
+    // Oracle steps
+    document.getElementById('oracleSteps').innerHTML = s.steps.oracle.map((step, i) => `
+      <div class="setup-step">
+        <div class="setup-num">${i+1}</div>
+        <div class="text-sm">${step}</div>
+      </div>
+    `).join('');
+
+    // Hetzner steps
+    document.getElementById('hetznerSteps').innerHTML = s.steps.hetzner.map((step, i) => `
+      <div class="setup-step">
+        <div class="setup-num">${i+1}</div>
+        <div class="text-sm">${step}</div>
+      </div>
+    `).join('');
+
+    // Script
+    document.getElementById('setupScript').textContent = s.script;
+
+    // Init tabs
+    initTabs(document.getElementById('setupTabs'));
+  }
+
+  function refreshLabels() {
+    const vm = t[currentLang].vm;
+    document.getElementById('vmTitle').textContent = vm.pageTitle;
+    document.getElementById('vmIntro').textContent = vm.intro;
+    document.getElementById('compTitle').textContent = vm.comparison.title;
+    document.getElementById('compSubtitle').textContent = vm.comparison.subtitle;
+    document.getElementById('featTitle').textContent = vm.features.title;
+    document.getElementById('setupTitle').textContent = vm.setup.title;
+    document.getElementById('vmTipText').innerHTML = currentLang === 'de'
+      ? 'Nach dem Setup: Setze deinen Anthropic API-Key mit <code>export ANTHROPIC_API_KEY=\'dein-key\'</code> und starte Claude Code mit <code>claude</code>.'
+      : 'After setup: Set your Anthropic API key with <code>export ANTHROPIC_API_KEY=\'your-key\'</code> and start Claude Code with <code>claude</code>.';
+    renderFeatureBoxes();
+    renderProviderTable();
+    renderSetupGuide();
+  }
+
+  function copyScript() {
+    const script = document.getElementById('setupScript').textContent;
+    navigator.clipboard.writeText(script).then(() => showToast(currentLang === 'de' ? 'Skript kopiert!' : 'Script copied!'));
+  }
+
+  document.addEventListener('DOMContentLoaded', refreshLabels);
+  document.addEventListener('langChange', refreshLabels);
+</script>
+</body>
+</html>

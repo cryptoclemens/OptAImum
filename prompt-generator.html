@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="de" data-lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OptAImum – Prompt-Generator</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .level-slider { width: 100%; accent-color: var(--primary); cursor: pointer; }
+    .level-labels { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--gray-500); margin-top: 0.3rem; }
+    .tip-card {
+      background: var(--white); border: 1px solid var(--gray-200);
+      border-radius: var(--radius); padding: 1.25rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .tip-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .api-row { display: flex; align-items: flex-end; gap: 0.75rem; flex-wrap: wrap; }
+    .api-row .form-group { flex: 1; min-width: 200px; margin-bottom: 0; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container navbar-inner">
+    <a class="navbar-logo" href="index.html"><img src="assets/logo.svg" alt="OptAImum" height="36"/></a>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    <div class="navbar-links" id="navLinks">
+      <a href="index.html" data-lang-key="nav.home">Start</a>
+      <a href="md-creator.html" data-lang-key="nav.mdCreator">MD-Creator</a>
+      <a href="llm-switcher.html" data-lang-key="nav.llmSwitch">LLM-Wechsel</a>
+      <a href="prompt-generator.html" class="active" data-lang-key="nav.promptGen">Prompts</a>
+      <a href="vm-guide.html" data-lang-key="nav.vmGuide">VM-Anleitung</a>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn" data-lang="de">DE</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</nav>
+
+<section class="section">
+  <div class="container" style="max-width:860px">
+    <h1 id="pgTitle">Prompt-Generator</h1>
+    <p class="mt-1 mb-4" id="pgIntro">Erstelle sofort einsetzbare Prompts für deine KI-Agenten.</p>
+
+    <div class="grid-2" style="align-items:start; gap:1.5rem">
+
+      <!-- LEFT: Form -->
+      <div>
+        <div class="card">
+          <!-- Agent selection -->
+          <div class="form-group">
+            <label class="form-label" id="agentLabel">Für welchen Agenten?</label>
+            <div class="agent-grid" id="agentGrid"></div>
+          </div>
+
+          <!-- Task input -->
+          <div class="form-group">
+            <label class="form-label" id="taskLabel">Was möchtest du tun?</label>
+            <textarea class="form-textarea" id="taskInput" rows="3" id="taskInput"
+              placeholder="Beschreibe kurz deine Aufgabe..."></textarea>
+          </div>
+
+          <!-- Context input -->
+          <div class="form-group">
+            <label class="form-label" id="contextLabel">Zusätzlicher Kontext (optional)</label>
+            <input type="text" class="form-input" id="contextInput" placeholder="z.B. Zielgruppe, Tonalität, Tools …"/>
+          </div>
+
+          <!-- Level slider -->
+          <div class="form-group">
+            <label class="form-label" id="levelLabel">Ausgabe-Level</label>
+            <input type="range" class="level-slider" id="levelSlider" min="0" max="2" value="1" step="1"/>
+            <div class="level-labels" id="levelLabels">
+              <span>Beginner</span><span>Standard</span><span>Profi</span>
+            </div>
+          </div>
+
+          <!-- Optional Gemini API -->
+          <div class="api-key-section mb-3" style="margin-top:0.5rem">
+            <label class="api-toggle" style="margin-bottom:0.5rem">
+              <label class="toggle-switch">
+                <input type="checkbox" id="pgApiToggle"/>
+                <span class="toggle-track"></span>
+              </label>
+              <span id="pgApiLabel">✨ KI-Unterstützung (Gemini – optional)</span>
+            </label>
+            <div id="pgApiBox" class="hidden">
+              <input type="password" class="form-input" id="pgApiKey" placeholder="Gemini API Key"/>
+              <div class="form-hint">
+                <a href="https://ai.google.dev" target="_blank" id="pgApiLink">Kostenlosen Key holen →</a>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-block" onclick="doGeneratePrompt()" id="genBtn">
+            🤖 <span id="genBtnText">Prompt generieren</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT: Output + Tips -->
+      <div>
+        <div class="card mb-3" id="resultCard" style="display:none">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem">
+            <h3 id="resultTitle">Dein generierter Prompt</h3>
+            <button class="btn btn-secondary btn-sm" id="pgCopyBtn" onclick="copyPrompt()">Kopieren</button>
+          </div>
+          <pre class="prompt-output" id="promptOutput"></pre>
+        </div>
+
+        <div class="card">
+          <h3 id="tipsTitle" style="margin-bottom:1rem">💡 Prompt-Tipps für Anfänger</h3>
+          <div id="tipsContainer" style="display:flex; flex-direction:column; gap:0.75rem"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-logo"><img src="assets/logo.svg" alt="OptAImum"/></div>
+    <div class="footer-links">
+      <a href="https://github.com/cryptoclemens/OptAImum" target="_blank">GitHub</a>
+    </div>
+    <span class="text-muted" style="font-size:0.8rem;" data-lang-key="footer.copy">© 2025 OptAImum.</span>
+  </div>
+</footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/app.js"></script>
+<script src="js/md-generator.js"></script>
+<script>
+  let selectedAgent = 'claude-api';
+
+  function renderAgentGrid() {
+    const agents = t[currentLang].prompt.agents;
+    document.getElementById('agentGrid').innerHTML = agents.map(a => `
+      <div class="agent-badge ${a.id === selectedAgent ? 'active' : ''}" data-id="${a.id}" onclick="selectAgent('${a.id}')">
+        ${a.emoji} ${a.label}
+      </div>
+    `).join('');
+  }
+
+  function selectAgent(id) {
+    selectedAgent = id;
+    document.querySelectorAll('.agent-badge').forEach(b => b.classList.toggle('active', b.dataset.id === id));
+  }
+
+  function renderTips() {
+    const tips = t[currentLang].prompt.tips.items;
+    document.getElementById('tipsTitle').textContent = t[currentLang].prompt.tips.title;
+    document.getElementById('tipsContainer').innerHTML = tips.map(tip => `
+      <div class="tip-card">
+        <div class="tip-icon">${tip.icon}</div>
+        <div>
+          <strong style="font-size:0.9rem">${tip.title}</strong>
+          <p class="text-sm mt-1">${tip.desc}</p>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function refreshLabels() {
+    const p = t[currentLang].prompt;
+    document.getElementById('pgTitle').textContent = p.pageTitle;
+    document.getElementById('pgIntro').textContent = p.intro;
+    document.getElementById('agentLabel').textContent = p.agent;
+    document.getElementById('taskLabel').textContent = p.task;
+    document.getElementById('taskInput').placeholder = p.taskHint;
+    document.getElementById('contextLabel').textContent = p.context;
+    document.getElementById('contextInput').placeholder = p.contextHint;
+    document.getElementById('levelLabel').textContent = p.level;
+    document.getElementById('genBtnText').textContent = p.generate;
+    document.getElementById('resultTitle').textContent = p.result;
+    document.getElementById('pgApiLabel').textContent = '✨ ' + (currentLang === 'de' ? 'KI-Unterstützung (Gemini – optional)' : 'AI support (Gemini – optional)');
+    document.getElementById('pgApiLink').textContent = currentLang === 'de' ? 'Kostenlosen Key holen →' : 'Get free key →';
+    const lvlOpts = p.levelOpts;
+    const labels = document.getElementById('levelLabels').children;
+    if (labels.length === 3) {
+      labels[0].textContent = lvlOpts[0].split(' – ')[0];
+      labels[1].textContent = lvlOpts[1].split(' – ')[0];
+      labels[2].textContent = lvlOpts[2].split(' – ')[0];
+    }
+    renderAgentGrid();
+    renderTips();
+  }
+
+  async function doGeneratePrompt() {
+    const task    = document.getElementById('taskInput').value.trim();
+    const context = document.getElementById('contextInput').value.trim();
+    const level   = parseInt(document.getElementById('levelSlider').value);
+    const apiKey  = document.getElementById('pgApiToggle').checked
+      ? document.getElementById('pgApiKey').value.trim() : null;
+
+    if (!task) {
+      showToast(currentLang === 'de' ? 'Bitte beschreibe deine Aufgabe.' : 'Please describe your task.', 'error');
+      return;
+    }
+
+    const btn = document.getElementById('genBtn');
+    btn.disabled = true;
+    document.getElementById('genBtnText').textContent = currentLang === 'de' ? 'Generiere...' : 'Generating...';
+
+    let prompt;
+    try {
+      if (apiKey) {
+        prompt = await generatePromptWithAI(apiKey, selectedAgent, task, context, level, currentLang);
+      } else {
+        prompt = generatePrompt(selectedAgent, task, context, level, currentLang);
+      }
+    } catch (err) {
+      showToast('Error: ' + err.message, 'error', 5000);
+      prompt = generatePrompt(selectedAgent, task, context, level, currentLang);
+    }
+
+    document.getElementById('promptOutput').textContent = prompt;
+    document.getElementById('resultCard').style.display = 'block';
+    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    btn.disabled = false;
+    document.getElementById('genBtnText').textContent = t[currentLang].prompt.generate;
+  }
+
+  function copyPrompt() {
+    copyText(document.getElementById('promptOutput').textContent, document.getElementById('pgCopyBtn'));
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    refreshLabels();
+    document.getElementById('pgApiToggle').addEventListener('change', function() {
+      document.getElementById('pgApiBox').classList.toggle('hidden', !this.checked);
+    });
+  });
+  document.addEventListener('langChange', refreshLabels);
+</script>
+</body>
+</html>

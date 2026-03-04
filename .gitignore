@@ -1,0 +1,29 @@
+# OptAImum .gitignore
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor directories
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local environment files (API keys etc. - never commit!)
+.env
+.env.local
+*.env
+
+# Node (if added later)
+node_modules/
+npm-debug.log*
+
+# Build output (if added later)
+dist/
+build/

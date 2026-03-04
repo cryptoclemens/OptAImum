@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="de" data-lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OptAImum – MD Creator</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .wizard-container { max-width: 720px; margin: 0 auto; }
+    .type-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.25rem; }
+    .type-card {
+      border: 2px solid var(--gray-200); border-radius: var(--radius-lg);
+      padding: 1.5rem; cursor: pointer; text-align: center;
+      transition: all var(--transition);
+    }
+    .type-card:hover { border-color: var(--primary); background: rgba(14,165,233,0.04); transform: translateY(-2px); }
+    .type-card.selected { border-color: var(--primary); background: rgba(14,165,233,0.08); }
+    .type-card .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .type-card h3 { font-size: 1rem; margin-bottom: 0.35rem; }
+    .type-card p { font-size: 0.82rem; color: var(--gray-600); }
+    .wizard-nav { display: flex; gap: 0.75rem; justify-content: space-between; margin-top: 2rem; }
+    .result-section { display: none; }
+    .result-header { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .platform-steps ol { list-style: decimal; padding-left: 1.25rem; }
+    .platform-steps li { margin-bottom: 0.25rem; font-size: 0.875rem; color: var(--gray-700); }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container navbar-inner">
+    <a class="navbar-logo" href="index.html"><img src="assets/logo.svg" alt="OptAImum" height="36"/></a>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    <div class="navbar-links" id="navLinks">
+      <a href="index.html" data-lang-key="nav.home">Start</a>
+      <a href="md-creator.html" class="active" data-lang-key="nav.mdCreator">MD-Creator</a>
+      <a href="llm-switcher.html" data-lang-key="nav.llmSwitch">LLM-Wechsel</a>
+      <a href="prompt-generator.html" data-lang-key="nav.promptGen">Prompts</a>
+      <a href="vm-guide.html" data-lang-key="nav.vmGuide">VM-Anleitung</a>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn" data-lang="de">DE</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</nav>
+
+<section class="section">
+  <div class="container wizard-container">
+    <h1 id="pageTitle">MD-Creator</h1>
+    <p class="mt-1 mb-3" id="pageIntro">Erstelle dein persönliches Profil-, Skill- und Hook-MD in einem geführten Wizard.</p>
+
+    <!-- ── STEP 0: Type selection ── -->
+    <div id="step0">
+      <div class="card mb-3">
+        <h2 id="chooseTypeTitle" style="font-size:1.2rem; margin-bottom:1rem;">Welches MD möchtest du erstellen?</h2>
+        <div class="type-cards" id="typeCards"></div>
+      </div>
+
+      <!-- API Key -->
+      <div class="api-key-section card mb-3" id="apiSection">
+        <label class="api-toggle">
+          <label class="toggle-switch">
+            <input type="checkbox" id="apiToggle"/>
+            <span class="toggle-track"></span>
+          </label>
+          <span id="apiToggleLabel">✨ KI-Unterstützung aktivieren (Google Gemini – kostenlos)</span>
+        </label>
+        <div id="apiKeyBox" class="hidden mt-2">
+          <div class="form-group" style="margin-bottom:0.5rem">
+            <input type="password" class="form-input" id="apiKeyInput" placeholder="Dein Gemini API Key"/>
+            <div class="form-hint" id="apiHint">Dein Key wird nur lokal genutzt und nie gespeichert. <a href="https://ai.google.dev" target="_blank" id="apiLink">Kostenlosen API Key holen →</a></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-2 justify-end">
+        <button class="btn btn-primary" id="startWizardBtn" disabled onclick="startWizard()">Weiter →</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 1+: Wizard questions ── -->
+    <div id="wizardContainer" class="hidden">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+      <div class="card">
+        <div id="questionArea"></div>
+
+        <div class="wizard-nav">
+          <button class="btn btn-ghost" id="prevBtn" onclick="prevStep()">← Zurück</button>
+          <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Weiter →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RESULT ── -->
+    <div id="resultSection" class="hidden">
+      <div class="card mb-3">
+        <div class="result-header">
+          <h2 id="resultTitle" style="font-size:1.2rem;">Dein MD ist fertig! 🎉</h2>
+          <div class="flex gap-1">
+            <button class="btn btn-secondary btn-sm" id="copyMdBtn" onclick="copyMd()">Kopieren</button>
+            <button class="btn btn-ghost btn-sm" onclick="downloadMd(currentMd, currentMdType + '.md')">⬇ .md</button>
+          </div>
+        </div>
+        <div style="position:relative">
+          <pre class="code-block" id="mdOutput"></pre>
+        </div>
+      </div>
+
+      <!-- Placement Guide -->
+      <h3 id="placementTitle" style="margin-bottom:1rem;">Wo hinterlegst du diese Datei?</h3>
+      <div id="placementCards"></div>
+
+      <div class="mt-3 flex gap-2">
+        <button class="btn btn-secondary" onclick="restart()">← Neues MD erstellen</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-logo"><img src="assets/logo.svg" alt="OptAImum"/></div>
+    <div class="footer-links">
+      <a href="https://github.com/cryptoclemens/OptAImum" target="_blank">GitHub</a>
+    </div>
+    <span class="text-muted" style="font-size:0.8rem;" data-lang-key="footer.copy">© 2025 OptAImum.</span>
+  </div>
+</footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/app.js"></script>
+<script src="js/md-generator.js"></script>
+<script>
+  let selectedType = null;
+  let currentStep  = 0;
+  let answers      = {};
+  let currentMd    = '';
+  let currentMdType = 'profile';
+
+  // Wizard question definitions
+  const wizardDefs = {
+    profile: (lang) => {
+      const p = t[lang].md.profile;
+      return [
+        { key: 'role', type: 'text', label: p.q1_label, hint: p.q1_hint },
+        { key: 'language', type: 'choice-single', label: p.q2_label, opts: p.q2_opts },
+        { key: 'level', type: 'choice-single', label: p.q3_label, opts: p.q3_opts },
+        { key: 'style', type: 'choice-single', label: p.q4_label, opts: p.q4_opts },
+        { key: 'tasks', type: 'textarea', label: p.q5_label, hint: p.q5_hint },
+        { key: 'avoid', type: 'textarea', label: p.q6_label, hint: p.q6_hint },
+        { key: 'extra', type: 'textarea', label: p.q7_label, hint: p.q7_hint },
+      ];
+    },
+    skill: (lang) => {
+      const s = t[lang].md.skill;
+      return [
+        { key: 'useCase', type: 'text', label: s.q1_label, hint: s.q1_hint },
+        { key: 'formats', type: 'choice-multi', label: s.q2_label, opts: s.q2_opts },
+        { key: 'level', type: 'choice-single', label: s.q3_label, opts: s.q3_opts },
+        { key: 'tools', type: 'text', label: s.q4_label, hint: s.q4_hint },
+        { key: 'constraints', type: 'textarea', label: s.q5_label, hint: s.q5_hint },
+      ];
+    },
+    hook: (lang) => {
+      const h = t[lang].md.hook;
+      return [
+        { key: 'always', type: 'textarea', label: h.q1_label, hint: h.q1_hint },
+        { key: 'never',  type: 'textarea', label: h.q2_label, hint: h.q2_hint },
+        { key: 'format', type: 'choice-single', label: h.q3_label, opts: h.q3_opts },
+        { key: 'confirm',type: 'choice-multi',  label: h.q4_label, opts: h.q4_opts },
+        { key: 'automations', type: 'textarea', label: h.q5_label, hint: h.q5_hint },
+      ];
+    },
+  };
+
+  function renderTypeCards() {
+    const types = t[currentLang].md.chooseType.types;
+    document.getElementById('typeCards').innerHTML = types.map(tp => `
+      <div class="type-card" data-id="${tp.id}" onclick="selectType('${tp.id}')">
+        <div class="icon">${tp.icon}</div>
+        <h3>${tp.title}</h3>
+        <p>${tp.desc}</p>
+      </div>
+    `).join('');
+  }
+
+  function selectType(id) {
+    selectedType = id;
+    document.querySelectorAll('.type-card').forEach(c => c.classList.toggle('selected', c.dataset.id === id));
+    document.getElementById('startWizardBtn').disabled = false;
+  }
+
+  function startWizard() {
+    currentStep = 0;
+    answers = {};
+    currentMdType = selectedType;
+    document.getElementById('step0').classList.add('hidden');
+    document.getElementById('wizardContainer').classList.remove('hidden');
+    renderQuestion();
+  }
+
+  function getQuestions() { return wizardDefs[selectedType](currentLang); }
+
+  function renderQuestion() {
+    const questions = getQuestions();
+    const q = questions[currentStep];
+    const total = questions.length;
+    document.getElementById('progressFill').style.width = `${((currentStep) / total) * 100}%`;
+
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    prevBtn.textContent = currentLang === 'de' ? '← Zurück' : '← Back';
+    prevBtn.style.visibility = currentStep === 0 ? 'hidden' : 'visible';
+
+    const isLast = currentStep === total - 1;
+    nextBtn.textContent = isLast
+      ? (currentLang === 'de' ? '✨ Generieren' : '✨ Generate')
+      : (currentLang === 'de' ? 'Weiter →' : 'Next →');
+
+    let html = `
+      <div class="flex-center" style="justify-content:space-between; margin-bottom:1rem;">
+        <span class="text-xs text-muted">${currentStep + 1} / ${total}</span>
+        <span class="badge badge-blue">${t[currentLang].md.chooseType.types.find(x=>x.id===selectedType)?.title || ''}</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">${q.label}</label>
+    `;
+
+    if (q.type === 'text') {
+      html += `<input type="text" class="form-input" id="qInput" value="${answers[q.key] || ''}" placeholder="${q.hint || ''}"/>`;
+      if (q.hint) html += `<div class="form-hint">${q.hint}</div>`;
+    } else if (q.type === 'textarea') {
+      html += `<textarea class="form-textarea" id="qInput" placeholder="${q.hint || ''}">${answers[q.key] || ''}</textarea>`;
+      if (q.hint) html += `<div class="form-hint">${q.hint}</div>`;
+    } else if (q.type === 'choice-single') {
+      html += `<div class="choice-grid" id="choiceContainer">`;
+      html += q.opts.map(opt => `
+        <div class="choice-item ${answers[q.key] === opt ? 'selected' : ''}" data-value="${opt}">
+          ${opt}
+        </div>
+      `).join('');
+      html += `</div>`;
+    } else if (q.type === 'choice-multi') {
+      const selected = answers[q.key] || [];
+      html += `<div class="choice-grid" id="choiceContainer">`;
+      html += q.opts.map(opt => `
+        <div class="choice-item ${selected.includes(opt) ? 'selected' : ''}" data-value="${opt}">
+          ${opt}
+        </div>
+      `).join('');
+      html += `</div>`;
+    }
+
+    html += `</div>`;
+    document.getElementById('questionArea').innerHTML = html;
+
+    // Init choice items
+    const cc = document.getElementById('choiceContainer');
+    if (cc) initChoiceItems(cc, q.type === 'choice-multi');
+  }
+
+  function saveCurrentAnswer() {
+    const questions = getQuestions();
+    const q = questions[currentStep];
+    if (q.type === 'text' || q.type === 'textarea') {
+      answers[q.key] = document.getElementById('qInput')?.value || '';
+    } else {
+      const cc = document.getElementById('choiceContainer');
+      if (cc) {
+        const sel = getSelectedChoices(cc);
+        answers[q.key] = q.type === 'choice-single' ? (sel[0] || '') : sel;
+      }
+    }
+  }
+
+  function nextStep() {
+    saveCurrentAnswer();
+    const total = getQuestions().length;
+    if (currentStep < total - 1) {
+      currentStep++;
+      renderQuestion();
+    } else {
+      generateMd();
+    }
+  }
+
+  function prevStep() {
+    saveCurrentAnswer();
+    if (currentStep > 0) {
+      currentStep--;
+      renderQuestion();
+    } else {
+      document.getElementById('wizardContainer').classList.add('hidden');
+      document.getElementById('step0').classList.remove('hidden');
+    }
+  }
+
+  async function generateMd() {
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.textContent = t[currentLang].md.generating;
+    nextBtn.disabled = true;
+
+    const apiKey = document.getElementById('apiToggle').checked
+      ? document.getElementById('apiKeyInput').value.trim()
+      : null;
+
+    try {
+      if (apiKey) {
+        currentMd = await generateWithAI(apiKey, selectedType, answers, currentLang);
+      } else {
+        if (selectedType === 'profile') currentMd = generateProfileMD(answers, currentLang);
+        else if (selectedType === 'skill') currentMd = generateSkillMD(answers, currentLang);
+        else currentMd = generateHookMD(answers, currentLang);
+      }
+    } catch (err) {
+      showToast('API Error: ' + err.message, 'error', 5000);
+      if (selectedType === 'profile') currentMd = generateProfileMD(answers, currentLang);
+      else if (selectedType === 'skill') currentMd = generateSkillMD(answers, currentLang);
+      else currentMd = generateHookMD(answers, currentLang);
+    }
+
+    showResult();
+    nextBtn.disabled = false;
+  }
+
+  function showResult() {
+    document.getElementById('wizardContainer').classList.add('hidden');
+    document.getElementById('resultSection').classList.remove('hidden');
+
+    const typeLabel = t[currentLang].md.chooseType.types.find(x=>x.id===selectedType)?.title || selectedType;
+    document.getElementById('resultTitle').textContent =
+      t[currentLang].md.result.title.replace('{type}', typeLabel);
+
+    document.getElementById('mdOutput').textContent = currentMd;
+
+    // Placement cards
+    const placements = t[currentLang].md.placement[selectedType] || [];
+    document.getElementById('placementCards').innerHTML = placements.map(p => `
+      <div class="placement-card">
+        <div class="placement-icon">${p.icon}</div>
+        <div>
+          <strong>${p.platform}</strong>
+          <ol class="placement-steps mt-1">
+            ${p.steps.map(s => `<li>${s}</li>`).join('')}
+          </ol>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('placementTitle').textContent = t[currentLang].md.result.placement;
+  }
+
+  function copyMd() {
+    copyText(currentMd, document.getElementById('copyMdBtn'));
+  }
+
+  function restart() {
+    selectedType = null;
+    currentStep = 0;
+    answers = {};
+    currentMd = '';
+    document.getElementById('resultSection').classList.add('hidden');
+    document.getElementById('step0').classList.remove('hidden');
+    document.getElementById('startWizardBtn').disabled = true;
+    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  }
+
+  // Lang change: re-render
+  document.addEventListener('langChange', () => {
+    renderTypeCards();
+    document.getElementById('chooseTypeTitle').textContent = t[currentLang].md.chooseType.title;
+    document.getElementById('pageTitle').textContent = t[currentLang].md.pageTitle;
+    document.getElementById('pageIntro').textContent = t[currentLang].md.intro;
+    document.getElementById('apiToggleLabel').textContent = t[currentLang].md.apiSection.toggleLabel;
+    document.getElementById('apiKeyInput').placeholder = t[currentLang].md.apiSection.placeholder;
+    document.getElementById('apiHint').innerHTML = t[currentLang].md.apiSection.hint + ` <a href="${t[currentLang].md.apiSection.getLinkUrl}" target="_blank">${t[currentLang].md.apiSection.getLinkText}</a>`;
+    if (selectedType && !document.getElementById('wizardContainer').classList.contains('hidden')) {
+      renderQuestion();
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderTypeCards();
+    document.getElementById('apiToggle').addEventListener('change', function() {
+      document.getElementById('apiKeyBox').classList.toggle('hidden', !this.checked);
+    });
+  });
+</script>
+</body>
+</html>
