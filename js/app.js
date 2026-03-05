@@ -2,6 +2,27 @@
    OptAImum – app.js  (Core utilities + Navbar + Language)
    ============================================================ */
 
+// ── Supabase config ───────────────────────────────────────────
+const SUPABASE_URL = 'https://ntdqmucoztkyuisldncd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_VR4xX9UrTCxeilwYh2EZkw_85Bp-JmT';
+
+async function saveFeedbackToSupabase(payload) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/feedback`, {
+    method:  'POST',
+    headers: {
+      'apikey':        SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type':  'application/json',
+      'Prefer':        'return=minimal',
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.text().catch(() => '');
+    throw new Error(`Supabase ${res.status}: ${err}`);
+  }
+}
+
 // ── Navbar ────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   // Highlight active nav link
@@ -262,17 +283,35 @@ function initFeedbackSlidebar() {
     });
   });
 
-  // Submit – opens mailto with pre-filled subject & body
-  panel.querySelector('#feedbackSubmit').addEventListener('click', () => {
-    const stars   = selectedStars ? '★'.repeat(selectedStars) + '☆'.repeat(5 - selectedStars) : 'keine Bewertung';
-    const cats    = selectedCats.length ? selectedCats.join(', ') : '–';
-    const msg     = panel.querySelector('#feedbackMsg').value.trim() || '–';
-    const page    = location.pathname.split('/').pop() || 'index';
-    const subject = encodeURIComponent(`OptAImum Feedback – ${stars}`);
-    const body    = encodeURIComponent(
-      `Bewertung: ${stars}\nKategorie: ${cats}\nSeite: ${page}\n\nNachricht:\n${msg}`
-    );
-    window.open(`mailto:feedback@innovation-republic.de?subject=${subject}&body=${body}`, '_blank');
+  // Submit – save to Supabase, fallback to mailto on error
+  panel.querySelector('#feedbackSubmit').addEventListener('click', async () => {
+    const submitBtn = panel.querySelector('#feedbackSubmit');
+    const stars     = selectedStars || null;
+    const cats      = selectedCats.length ? selectedCats : null;
+    const msg       = panel.querySelector('#feedbackMsg').value.trim() || null;
+    const page      = location.pathname.split('/').pop() || 'index';
+    const lang      = typeof currentLang !== 'undefined' ? currentLang : 'de';
+
+    submitBtn.disabled   = true;
+    submitBtn.textContent = '…';
+
+    try {
+      await saveFeedbackToSupabase({ page, stars, categories: cats, message: msg, lang });
+    } catch (err) {
+      console.warn('Supabase feedback failed, falling back to mailto:', err);
+      // Mailto fallback
+      const starsStr = stars ? '★'.repeat(stars) + '☆'.repeat(5 - stars) : '–';
+      const catsStr  = cats  ? cats.join(', ')                            : '–';
+      const subject  = encodeURIComponent(`OptAImum Feedback – ${starsStr}`);
+      const body     = encodeURIComponent(
+        `Bewertung: ${starsStr}\nKategorie: ${catsStr}\nSeite: ${page}\n\nNachricht:\n${msg || '–'}`
+      );
+      window.open(`mailto:feedback@innovation-republic.de?subject=${subject}&body=${body}`, '_blank');
+    } finally {
+      submitBtn.disabled    = false;
+      submitBtn.textContent = typeof currentLang !== 'undefined' && currentLang === 'en'
+        ? 'Send Feedback' : 'Feedback senden';
+    }
 
     // Show thank-you
     panel.querySelector('#feedbackBody').style.display   = 'none';
