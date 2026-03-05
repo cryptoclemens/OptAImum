@@ -127,8 +127,8 @@ function initDarkMode() {
   const saved = localStorage.getItem('optaimum-theme') || 'light';
   document.documentElement.setAttribute('data-theme', saved);
 
-  // Inject toggle button into navbar (after language toggle)
-  const navRight = document.querySelector('.navbar-right');
+  // Inject toggle button into navbar (before language toggle)
+  const navRight = document.querySelector('.lang-toggle');
   if (!navRight) return;
 
   const btn = document.createElement('button');
@@ -137,7 +137,7 @@ function initDarkMode() {
   btn.title        = 'Dark / Light Mode';
   btn.setAttribute('aria-label', 'Toggle dark mode');
   btn.textContent  = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
-  navRight.insertBefore(btn, navRight.firstChild);
+  navRight.parentNode.insertBefore(btn, navRight);
 
   btn.addEventListener('click', () => {
     const current = document.documentElement.getAttribute('data-theme');
