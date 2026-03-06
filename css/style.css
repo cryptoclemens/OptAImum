@@ -100,7 +100,7 @@ p  { color: var(--gray-700); }
 }
 .ir-logo-link:hover { opacity: 1; }
 .ir-logo {
-  height: 24px;
+  height: 36px;
   width: auto;
   display: block;
 }
