@@ -10,12 +10,12 @@
   <link rel="icon" type="image/png" href="assets/favicon.png"/>
   <style>
     .version-badge {
-      position: fixed; top: 0.6rem; right: 5rem; z-index: 200;
+      display: inline-flex; align-items: center;
       background: rgba(99,102,241,0.12); color: var(--secondary);
       border: 1px solid rgba(99,102,241,0.25);
       border-radius: 12px; padding: 0.15rem 0.6rem;
       font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;
-      pointer-events: none;
+      pointer-events: none; white-space: nowrap;
     }
     .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }
     .why-card { display: flex; gap: 1rem; align-items: flex-start; padding: 1.25rem; background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius); }
@@ -45,8 +45,6 @@
 </head>
 <body>
 
-<span class="version-badge">v0.1.5</span>
-
 <!-- ── NAVBAR ───────────────────────────────────────────────── -->
 <nav class="navbar">
   <div class="container navbar-inner">
@@ -68,6 +66,7 @@
     </div>
 
     <div class="lang-toggle">
+      <span class="version-badge">v0.1.5</span>
       <button class="lang-btn" data-lang="de">DE</button>
       <button class="lang-btn" data-lang="en">EN</button>
     </div>
